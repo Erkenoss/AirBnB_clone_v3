@@ -19,12 +19,12 @@ def get_stats():
     """retrieves the number of each object"""
 
     stats = {
-        storage.count('Amenities'),
-        storage.count('City'),
-        storage.count('Place'),
-        storage.count('Review'),
-        storage.count('State'),
-        storage.count('user'),
+        "amenities": storage.count('Amenity'),
+        "cities": storage.count('City'),
+        "places": storage.count('Place'),
+        "reviews": storage.count('Review'),
+        "states": storage.count('State'),
+        "users": storage.count('User'),
     }
 
     return jsonify(stats)
