@@ -9,9 +9,12 @@ from models.state import City
 
 @app_views.route('/states/<state_id>/cities', methods=['GET'])
 def get_cities(state_id):
-    States = storage.get(State, state_id)
+    states = storage.get(State, state_id)
+    if states is None:
+        abort(404)
+
     dict_json = []
-    for city in States.cities:
+    for city in states.cities:
         dict_json.append(city.to_dict())
     return jsonify(dict_json)
 
