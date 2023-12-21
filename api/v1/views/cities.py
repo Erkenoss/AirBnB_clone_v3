@@ -29,7 +29,7 @@ def get_city_id(city_id):
         return jsonify(city.to_dict())
 
 
-@app_views.route('/states/<city_id>', methods=['DELETE'])
+@app_views.route('/cities/<city_id>', methods=['DELETE'])
 def delete_city(city_id):
     """Deletes a State object with id"""
     city = storage.get(City, city_id)
