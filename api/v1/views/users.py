@@ -1,25 +1,21 @@
 #!/usr/bin/python3
-"""User"""
+"""Users"""
 from api.v1.views import app_views
 from flask import abort, jsonify, request
 from models import storage
 from models.user import User
 
-@app_views.route('/users',methods=['GET'])
-def get_users():
-    users = storage.get(User).values()
-    if users is None:
-        abort(404)
 
-    dict_users = []
-    for user in users:
-        dict_users.append(user.to_dict())
-    return jsonify(dict_users)
+@app_views.route('/users', methods=['GET'])
+def get_users():
+    """Retrieves the list of all User objects"""
+    users = [user.to_dict() for user in storage.all(User).values()]
+    return jsonify(users)
 
 
 @app_views.route('/users/<user_id>', methods=["GET"])
-def get_user_id(user_id):
-    """Retrieves a user object"""
+def get_user(user_id):
+    """Retrieves a User object"""
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
@@ -40,39 +36,34 @@ def delete_user(user_id):
     return jsonify({}), 200
 
 
-@app_views.route("/users", methods=["POST"],
-                 strict_slashes=False)
-def post_user():
-    """Creates a user"""
-    user = request.get_json()
-
-    if user is None:
-        abort(400, "Not a JSON")
-    if 'email' not in user:
+@app_views.route('/users', methods=['POST'], strict_slashes=False)
+def create_user():
+    """Creates a new User"""
+    data = request.get_json()
+    if not data:
+        abort(400, 'Not a JSON')
+    if 'email' not in data:
         abort(400, 'Missing email')
-    if 'password' not in user:
+    if 'password' not in data:
         abort(400, 'Missing password')
-
-    body = User(**user)
-    storage.new(body)
-    storage.save()
-
-    return jsonify(body.to_dict()), 201
+    new_user = User(**data)
+    new_user.save()
+    return jsonify(new_user.to_dict()), 201
 
 
 @app_views.route("/users/<user_id>", methods=["PUT"])
-def update_city(user_id):
-    """Updates a State object"""
+def update_user(user_id):
+    """Updates a User object"""
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
     else:
-        request_htpp = request.get_json()
-        if request_htpp is None:
+        request_http = request.get_json()
+        if request_http is None:
             abort(400, 'Not a JSON')
 
-    for key, value in request_htpp.items():
-        if key not in ['id', 'email', 'created_at', 'updated_at']:
+    for key, value in request_http.items():
+        if key not in ['id', 'email', 'created_at', 'updated_at', 'password']:
             setattr(user, key, value)
 
     storage.save()
