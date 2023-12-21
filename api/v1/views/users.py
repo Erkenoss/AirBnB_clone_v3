@@ -7,7 +7,7 @@ from models.user import User
 
 @app_views.route('/users',methods=['GET'])
 def get_users():
-    users = storage.get(User)
+    users = storage.get(User).values()
     if users is None:
         abort(404)
 
