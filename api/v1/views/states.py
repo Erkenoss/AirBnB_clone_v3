@@ -1,21 +1,20 @@
 #!/usr/bin/python3
 """State api"""
-
-
-from flask import Flask, jsonify, abort, request
 from api.v1.views import app_views
+from flask import jsonify, abort, request
 from models import storage
 from models.state import State
 
 
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
 def get_states():
-    """Retrieve the list of all State objects"""
+    """Retrieve the list of all States"""
     States = storage.all(State)
     dict_json = []
     for state in States.values():
         dict_json.append(state.to_dict())
     return jsonify(dict_json)
+
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
 def get_states_id(state_id):
@@ -38,19 +37,22 @@ def del_state(state_id):
 
     return jsonify({}), 200
 
+
 @app_views.route('/states', methods='POST', strict_slashes=False)
 def create_state():
     """Create a new State object"""
     data = request.get_json()
-    if not data:
+    if data is None:
         abort(400, "not a JSON")
     if 'name' not in data:
-        abort(400)
+        abort(400, "Missing Name")
 
     new_state = State(**data)
+    storage.new(new_state)
     new_state.save()
 
     return jsonify(new_state.to_dict()), 201
+
 
 @app_views.route('/states/<state_id>', methods='PUT', strict_slashes=False)
 def update_state(state_id):
