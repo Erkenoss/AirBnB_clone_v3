@@ -17,12 +17,14 @@ app.register_blueprint(app_views)
 # Enable CORS for all routes under "/api/v1/"
 CORS(app, resources={r"/api/v1/*": {"origins": "0.0.0.0"}})
 
+
 @app.teardown_appcontext
 def teardown_appcontext(self):
     '''
     a method to handle @app.teardown_appcontext
     '''
     storage.close()
+
 
 @app.errorhandler(404)
 def not_found(error):
